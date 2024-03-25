@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
+import './graphiqueBourse.dart';
+import './DetailPage.dart';
+
 import 'package:fl_chart/fl_chart.dart';
 
 class InfoDataGraphique extends StatelessWidget {
@@ -48,10 +51,29 @@ class InfoDataGraphique extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.show_chart),
                   onPressed: () {
-                    // Implémentez la navigation vers une vue détaillée
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => DetailPage(stockData: stockData),
+                      ),
+                    );
                   },
                 ),
               ],
+            ),
+            Container(
+              height:
+                  65, // Définissez une hauteur pour le conteneur du graphique
+              decoration: BoxDecoration(
+                border:
+                    Border.all(color: Colors.grey), // Couleur de la bordure ici
+                borderRadius: BorderRadius.circular(
+                    10.0), // Rayon de la bordure pour des coins arrondis
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(
+                    8.0), // Ajoutez du padding pour éviter que le graphique touche les bords
+                child: GraphiqueBourse(),
+              ),
             ),
             SizedBox(height: 8.0),
             Row(
