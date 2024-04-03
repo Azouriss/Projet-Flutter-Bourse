@@ -7,10 +7,12 @@ class SignupCard extends StatefulWidget {
 }
 
 class _SignupCardState extends State<SignupCard> {
+  // Initialisation des contrôleurs pour gérer les champs de texte.
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Fonction asynchrone pour gérer l'inscription d'un nouvel utilisateur.
   Future<void> _signup() async {
     final name = _nameController.text;
     final email = _emailController.text;
@@ -24,29 +26,33 @@ class _SignupCardState extends State<SignupCard> {
         password: password,
       );
 
+      // Vérification si l'utilisateur a été créé avec succès.
       if (response.user != null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Signup successful!"),
+          content: Text("Inscription réussit."),
           backgroundColor: Colors.green,
         ));
         // Redirect the user or perform other actions
       } else {
+        // Affichage d'un message d'échec.
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Signup failed"),
+          content: Text("Inscription échoué"),
           backgroundColor: Colors.red,
         ));
       }
     } on AuthException catch (e) {
+      // Gestion des exceptions liées à l'authentification.
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Signup error: ${e.message}"),
+        content: Text("Erreur inscription : ${e.message}"),
         backgroundColor: Colors.red,
       ));
     } catch (e) {
+      // Gestion des autres exceptions.
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("An unexpected error occurred"),
+        content: Text("Une erreur est parvenue !"),
         backgroundColor: Colors.red,
       ));
-      print('Signup error: $e');
+      print('Erreur inscription : $e');
     }
   }
 
@@ -60,14 +66,16 @@ class _SignupCardState extends State<SignupCard> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              // Champ pour le pseudo de l'utilisateur.
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: 'Nom Prenom',
+                  labelText: 'Pseudo',
                   hintStyle: TextStyle(color: Colors.blue),
                 ),
               ),
               const SizedBox(height: 10),
+              // Champ pour l'email.
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -76,6 +84,7 @@ class _SignupCardState extends State<SignupCard> {
                 ),
               ),
               const SizedBox(height: 10),
+              // Champ pour le mot de passe, masqué pour la confidentialité.
               TextField(
                 controller: _passwordController,
                 decoration: InputDecoration(
@@ -85,6 +94,7 @@ class _SignupCardState extends State<SignupCard> {
                 obscureText: true,
               ),
               const SizedBox(height: 20),
+              // Bouton pour soumettre le formulaire d'inscription.
               ElevatedButton(
                 onPressed: _signup, // Call the signup function here
                 child: const Text(

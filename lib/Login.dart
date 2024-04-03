@@ -11,36 +11,43 @@ class LoginCard extends StatefulWidget {
 }
 
 class _LoginCardState extends State<LoginCard> {
+  // Déclaration et initialisation des contrôleurs pour les champs de texte d'email et de mot de passe.
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Méthode asynchrone pour gérer le processus de connexion.
   Future<void> _login() async {
     try {
+      // Tentative de connexion avec Supabase en utilisant l'email et le mot de passe fournis.
       final response = await Supabase.instance.client.auth.signInWithPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
 
+      // Si la réponse contient un utilisateur, cela signifie que la connexion a réussi.
       if (response.user != null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Login successful!"),
+          content: Text("Connexion réussit."),
           backgroundColor: Colors.green,
         ));
         widget.onLoginSuccess(); // Invoke the callback when login is successful
       } else {
+        // Affichage d'un message d'erreur si aucun utilisateur n'est retourné.
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Login failed for an unknown reason"),
+          content: Text("La connexion à échoué pour une raison inconnue !"),
           backgroundColor: Colors.red,
         ));
       }
     } on AuthException catch (e) {
+      // Gestion des exceptions liées à l'authentification.
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error during login: ${e.message}"),
+        content: Text("Erreur durant la connexion : ${e.message}"),
         backgroundColor: Colors.red,
       ));
     } catch (e) {
+      // Gestion des autres types d'erreurs.
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("An unexpected error occurred"),
+        content: Text("Une erreur est parvenue !"),
         backgroundColor: Colors.red,
       ));
       print('Login error: $e');
@@ -57,6 +64,7 @@ class _LoginCardState extends State<LoginCard> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              // Champ de texte pour l'email.
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -65,6 +73,7 @@ class _LoginCardState extends State<LoginCard> {
                 ),
               ),
               const SizedBox(height: 10),
+              // Champ de texte pour le mot de passe, masqué pour la confidentialité.
               TextField(
                 controller: _passwordController,
                 decoration: InputDecoration(
@@ -74,6 +83,7 @@ class _LoginCardState extends State<LoginCard> {
                 obscureText: true,
               ),
               const SizedBox(height: 20),
+              // Bouton de connexion qui déclenche la méthode _login.
               ElevatedButton(
                 onPressed: _login,
                 child: const Text(

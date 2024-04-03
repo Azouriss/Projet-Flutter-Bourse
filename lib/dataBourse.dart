@@ -1,3 +1,4 @@
+// Importation des packages nécessaires à l'application.
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -5,11 +6,14 @@ import './infoDataCard.dart';
 import './articles.dart';
 import './Login.dart';
 import './SignUp.dart';
+import './infoArticles.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:async';
 
+// Déclaration de la classe StatefulWidget pour l'écran DataBourse.
 class DataBourse extends StatefulWidget {
+  // Constructeur de la classe avec une clé optionnelle.
   const DataBourse({Key? key}) : super(key: key);
 
   @override
@@ -17,16 +21,19 @@ class DataBourse extends StatefulWidget {
 }
 
 class _DataBourseState extends State<DataBourse> {
+  // Déclaration des variables d'état.
   List<String> stockData = [];
   bool isLoggedIn = false;
 
   @override
+  // Initialisation de l'état.
   void initState() {
     super.initState();
     fetchData(['AAPL', 'AMZN', 'GOOG']);
     checkLoginStatus();
   }
 
+  // Fonction pour vérifier si l'utilisateur est connecté
   void checkLoginStatus() {
     final user = Supabase.instance.client.auth.currentUser;
     setState(() {
@@ -34,6 +41,7 @@ class _DataBourseState extends State<DataBourse> {
     });
   }
 
+  // Fonction pour déconnecter l'utilisateur.
   void logout() async {
     await Supabase.instance.client.auth.signOut();
     setState(() {
@@ -41,8 +49,9 @@ class _DataBourseState extends State<DataBourse> {
     });
   }
 
+  // Fonction asynchrone pour récupérer les données boursières des symboles spécifiés.
   Future<void> fetchData(List<String> symbols) async {
-    List<String> stockInfoData = [];
+    List<String> stockInfoData = []; // Liste temporaire pour stocker les données.
     for (String symbol in symbols) {
       try {
         final response = await getData(symbol);
@@ -60,6 +69,7 @@ class _DataBourseState extends State<DataBourse> {
     });
   }
 
+  // Fonction asynchrone pour envoyer une requête HTTP et récupérer les données boursières.
   Future<http.Response> getData(String symbol) async {
     const apiKey = 'ecc918ef30870f196bf3f32db6ed23fe';
     final authority = 'financialmodelingprep.com';
@@ -69,11 +79,12 @@ class _DataBourseState extends State<DataBourse> {
       'apikey': apiKey,
     };
 
-    final uri = Uri.https(authority, path, parameters);
+    final uri = Uri.https(authority, path, parameters); // Construction de l'URI pour la requête.
     return await http.get(uri);
   }
 
   @override
+  // Fonction de construction de l'interface utilisateur.
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -83,6 +94,7 @@ class _DataBourseState extends State<DataBourse> {
         ),
         backgroundColor: Colors.grey[850],
         actions: <Widget>[
+          // Si l'utilisateur n'est pas connecté, montre le bouton de connexion.
           if (!isLoggedIn)
             TextButton(
               onPressed: () {
@@ -99,10 +111,11 @@ class _DataBourseState extends State<DataBourse> {
                 );
               },
               child: const Text(
-                'Login',
+                'Connexion',
                 style: TextStyle(color: Colors.white),
               ),
             ),
+          // Si l'utilisateur n'est pas connecté, montre également le bouton d'inscription.
           if (!isLoggedIn)
             TextButton(
               onPressed: () {
@@ -114,10 +127,11 @@ class _DataBourseState extends State<DataBourse> {
                 );
               },
               child: const Text(
-                'Register',
+                'Inscription',
                 style: TextStyle(color: Colors.white),
               ),
             ),
+          // Si l'utilisateur est connecté, montre le bouton de déconnexion.
           if (isLoggedIn)
             TextButton(
               onPressed: logout,
@@ -131,6 +145,7 @@ class _DataBourseState extends State<DataBourse> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
+          // Permet le défilement si le contenu dépasse l'écran.
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -142,6 +157,7 @@ class _DataBourseState extends State<DataBourse> {
                     fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 20),
+              // Mappe les données boursières à des widgets pour l'affichage.
               ...stockData
                   .map((data) => Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
@@ -158,14 +174,30 @@ class _DataBourseState extends State<DataBourse> {
                       color: Colors.blueAccent),
                 ),
               ),
-              // Ici vous ajouterez vos articles et autres widgets
+              Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => infoArticles(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'En savoir plus ...',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+              // Affiche des cartes d'articles dans une ligne, permettant de parcourir horizontalement.
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+                // Utilise la fonction articleCard pour créer des cartes pour chaque article.
                 children: [
-                  // Vous pouvez créer un widget personnalisé pour ces cartes pour éviter la répétition du code
-                  articleCard('Titre 1', 'Description de l\'article 1...'),
-                  articleCard('Titre 2', 'Description de l\'article 2...'),
-                  articleCard('Titre 3', 'Description de l\'article 3...'),
+                  articleCard('Titre 1', 'Description de l\'article 1...', context),
+                  articleCard('Titre 2', 'Description de l\'article 2...', context),
+                  articleCard('Titre 3', 'Description de l\'article 3...', context),
                 ],
               )
             ],
